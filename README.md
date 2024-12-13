@@ -16,8 +16,4 @@ npm run dev
 
 ### on vercel
 
--- https://seven-hunter-test.vercel.app/
-
-```bash
 https://seven-hunter-test.vercel.app/
-```
