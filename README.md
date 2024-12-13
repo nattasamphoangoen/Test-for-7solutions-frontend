@@ -2,8 +2,8 @@
 
 ### Test system
 ```bash
-clone repository
-cd repository
+# clone repository
+# cd repository
 
 # install
 npm i
