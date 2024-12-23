@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import DataListType from "./index";
 import datalist from "./dataList";
 
@@ -28,10 +28,25 @@ const AutoDeleteTodoList: React.FC = () => {
   const [fruitList, setFruitList] = useState<DataListType[]>([]);
   const [vegetableList, setVegetableList] = useState<DataListType[]>([]);
 
+  const timersRef = useRef<{ [key: string]: number }>({});
+
+  useEffect(() => {
+    const currentTimers = timersRef.current;
+    return () => {
+      Object.values(currentTimers).forEach((timerId) => {
+        window.clearTimeout(timerId);
+      });
+    };
+  }, []);
+
   const handleMoveToColumn = (item: DataListType, index: number) => {
     const updatedDataList = [...dataList];
     updatedDataList.splice(index, 1);
     setDataList(updatedDataList);
+
+    if (timersRef.current[item.name]) {
+      window.clearTimeout(timersRef.current[item.name]);
+    }
 
     if (item.type === "Fruit") {
       setFruitList((prev) => [...prev, item]);
@@ -46,7 +61,7 @@ const AutoDeleteTodoList: React.FC = () => {
     item: DataListType,
     setColumn: React.Dispatch<React.SetStateAction<DataListType[]>>
   ) => {
-    setTimeout(() => {
+    const timerId = window.setTimeout(() => {
       setColumn((prev) => prev.filter((data) => data !== item));
       setDataList((prev) => {
         if (!prev.find((data) => data === item)) {
@@ -54,17 +69,21 @@ const AutoDeleteTodoList: React.FC = () => {
         }
         return prev;
       });
+      delete timersRef.current[item.name];
     }, 5000);
+    timersRef.current[item.name] = timerId;
   };
 
   const handleMoveBackToMain = (
     item: DataListType,
     setColumn: React.Dispatch<React.SetStateAction<DataListType[]>>
   ) => {
-    setColumn((prev) => {
-      const updatedList = prev.filter((data) => data !== item);
-      return updatedList;
-    });
+    if (timersRef.current[item.name]) {
+      window.clearTimeout(timersRef.current[item.name]);
+      delete timersRef.current[item.name];
+    }
+
+    setColumn((prev) => prev.filter((data) => data !== item));
     setDataList((prev) => {
       if (!prev.find((data) => data === item)) {
         return [...prev, item];
