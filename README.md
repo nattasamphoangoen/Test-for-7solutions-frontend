@@ -14,7 +14,7 @@ npm run dev
 
 ```
 
-### Test system with Next.js + Typescript
+### Test system with Next.js + Typescript + Tailwind CSS
 
 ```bash
 # clone repository
